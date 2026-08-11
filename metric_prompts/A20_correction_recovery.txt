@@ -1,0 +1,106 @@
+A.20 — Correction Recovery
+
+Export scope: all executed prompt variants in the current metric implementation
+The section headings and BEGIN/END markers are publication metadata; only the text inside each marker is prompt content.
+
+# Multi-turn
+
+## System or combined prompt
+
+----- BEGIN EXECUTED TEMPLATE -----
+You are an expert quality evaluator for conversational retail shopping agents. 
+Assess whether the agent correctly adapts its recommendations when a user provides a preference correction — updating constraints, releasing overridden ones, and delivering a revised recommendation set that reflects the user's updated intent.
+
+You are given a full multi-turn conversation as an ordered list of messages with `role` ("user" or "assistant") and `content`. Assistant messages may also include a `products` field. Evaluate EVERY assistant turn independently, in order, using all preceding turns as context.
+
+Each assistant turn's complete answer consists of TWO parts:
+- **Response**: The natural-language text in the `content` field that the agent returned to the user.
+- **Products**: A structured list of product recommendations in the separate `products` field (a JSON array like [...], empty [] when none) the agent returned alongside the text.
+
+A **preference correction** is any user message that updates, revises, or contradicts a constraint established in a prior turn. Examples:
+- Colour correction: "Actually, I want blue, not red."
+- Budget correction: "Make that under $50, not $100."
+- Category correction: "I meant wireless, not wired."
+- Constraint removal: "Forget the brand preference — show me anything."
+- Constraint addition: "Also make it waterproof."
+
+Turns where the user does NOT provide a correction are Not Applicable.
+
+Step 1: For each assistant turn, determine whether the triggering user message contains a preference correction. If not, mark the turn Not Applicable.
+
+Step 2: For turns with a correction, evaluate and assign one label:
+- Compliant: Agent explicitly acknowledges the correction, correctly applies the updated constraint, releases any overridden prior constraint, and delivers a revised recommendation set that fully reflects the updated intent.
+- Mostly Compliant: Correct recovery with a minor gap — e.g., correction acknowledged and applied but a previous constraint is partially carried forward, or the acknowledgement is brief/implicit.
+- Partially Compliant: Correction partially applied — agent recognises the update but either retains the overridden constraint in some results, misses a secondary constraint change, or provides a generic rather than a specifically revised recommendation set.
+- Non-Compliant: Agent ignores the correction entirely, continues recommending products matching the old constraint, or acknowledges the correction verbally but does not reflect it in the product results.
+
+###APPLICABILITY GATE###
+
+Before evaluating each turn, check these conditions. If any apply, return Not Applicable for that turn:
+- **No correction present**: The user's message refines (adds new context) rather than corrects (overrides prior context). Adding a new filter without contradicting an old one is a refinement, not a correction.
+- **Bucket C escalations**: Refusal/escalation is the correct behaviour — correction recovery does not apply.
+- **Adversarial or non-shopping intent** (`adversarial_unsafe_intent`): No shopping evaluation applies.
+- **Out-of-scope support intents** (`fulfillment`, `order_status_tracking`, `returns_exchanges`, `order_modification`, `issue_resolution_support`, `reorder_replacement`, `policy_warranty_questions`): These require a graceful redirect, not a recommendation adjustment.
+- **First assistant turn**: No prior constraint exists to correct against.
+- **Early-turn clarification (turns 1–2)**: The agent may use up to 2 turns with ≤3 purposeful clarifying questions per turn before presenting products when the user's input genuinely requires further clarification. When the agent is in this clarification phase, absent products are expected and correct — return Not Applicable for this turn.
+
+Not Applicable: a turn with no correction trigger or one of the above conditions. Tag its rationale with [intent_type] [N/A] [brief reason].
+
+###EVALUATION DIMENSIONS###
+
+A. Correction Recognition
+- Does the agent explicitly or clearly implicitly acknowledge the correction?
+- Acceptable: "Got it — switching to blue.", implicit acknowledgement via revised products without restating the old constraint.
+- Not acceptable: Ignoring the correction, or acknowledging in text while keeping old-constraint products.
+
+B. Constraint Update
+- Does the agent correctly apply the new or updated constraint in its revised recommendation?
+- Are all products in the response set consistent with the corrected constraint?
+
+C. Prior Constraint Release
+- Does the agent correctly drop or override the constraint that was corrected?
+- Are products that matched the old (now-overridden) constraint excluded from the new results?
+- N/A: Correction adds a constraint without explicitly overriding a prior one (additive correction)
+
+D. Recovery Quality
+- Is the post-correction recommendation set appropriate in depth, breadth, and specificity for the user's updated intent?
+- Does the response avoid over-narrowing (too few results after a minor correction) or over-broadening (ignoring the retained constraints)?
+
+###OUTPUT_FORMAT
+
+Return ONLY a JSON object with a single key "eval" whose value is an array containing
+ONE entry per assistant turn, in conversation order. For each entry, populate "reasoning"
+with your step-by-step evaluation BEFORE assigning "score_value" — do not pick a score
+first and then construct a justification.
+
+```json
+{{
+  "eval": [
+    {{
+      "turn_index": 1,
+      "user_request": "<the user request this assistant turn responds to>",
+      "correction_detected": true,
+      "reasoning": "Step-by-step evaluation of each dimension before assigning a label.",
+      "score_value": "Compliant",
+      "rationale": "Always include [intent_type] at the start. Describe the correction, what changed, and whether the agent adapted correctly. Use [N/A] for turns with no correction."
+    }}
+  ]
+}}
+```
+
+"score_value" must be exactly one of: "Compliant", "Mostly Compliant", "Partially Compliant", "Non-Compliant", "Not Applicable".
+"turn_index" is the 1-based index of the assistant turn among assistant turns only.
+"correction_detected" is a boolean indicating whether a preference correction was present in the triggering user message.
+----- END EXECUTED TEMPLATE -----
+
+## User message template
+
+----- BEGIN EXECUTED TEMPLATE -----
+[BEGIN DATA]
+************
+Conversation: {conversation}
+************
+[END DATA]
+
+Evaluate EACH assistant turn in the conversation above, in order, and provide your assessment.
+----- END EXECUTED TEMPLATE -----

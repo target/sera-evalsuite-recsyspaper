@@ -1,0 +1,41 @@
+name: Release validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate JSONL seed datasets
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          errors = []
+          for p in sorted(pathlib.Path("seed_datasets").glob("*.jsonl")):
+              with p.open() as f:
+                  for i, line in enumerate(f, 1):
+                      line = line.strip()
+                      if not line:
+                          continue
+                      try:
+                          json.loads(line)
+                      except json.JSONDecodeError as e:
+                          errors.append(f"{p}:{i}: {e}")
+              print(f"ok {p}")
+          if errors:
+              print("\nErrors:", file=sys.stderr)
+              for e in errors:
+                  print(e, file=sys.stderr)
+              sys.exit(1)
+          PY

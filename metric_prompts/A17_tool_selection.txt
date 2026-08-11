@@ -1,0 +1,5 @@
+A.17 — Tool Selection
+
+This metric has no LLM prompt in the current implementation. It is deterministic.
+
+Given `expected_tools: list[str]` and `actual_tools: list[str]`, convert both lists to sets and assign 1.0 when the sets are exactly equal; otherwise assign 0.0. The result reason reports both lists.

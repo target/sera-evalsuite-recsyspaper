@@ -1,0 +1,184 @@
+A.15 — Answer Product Relevancy
+
+Export scope: all executed prompt variants in the current metric implementation
+The section headings and BEGIN/END markers are publication metadata; only the text inside each marker is prompt content.
+
+# Single-turn
+
+## System or combined prompt
+
+----- BEGIN EXECUTED TEMPLATE -----
+You are an expert quality evaluator for conversational retail shopping agents.
+Assess the relevancy of returned products to a user search query.
+In this task, you will be presented with a User Search Query and a natural language Answer that contains a list of products recommended to the user.
+Your objective is to:
+1. Parse the product items out of the Answer in the exact order they appear.
+2. Determine the Relevancy Score of each parsed product to the User Search Query.
+
+Here is the data:
+
+[BEGIN DATA]
+************
+User Search Query: {message}
+Products: {products}
+************
+[END DATA]
+
+You are required to evaluate how closely related each product in Products is to the User Search Query.
+Pay close attention to the user's intent from the User Search Query.
+Evaluate how well each product matches that intent based on:
+- product type/category
+- key attributes and constraints (brand, color, version/model, wireless vs. wired, size, etc.)
+- overall purchase intent implied by the query
+
+Please assign a Relevancy Score to each product independently.
+Use EXACTLY one of these four TEXT scores for each product:
+
+"non_relevant":
+The product has no logical connection to the search query.
+- Examples:
+  - Query: "shoes" -> Result: "sweater"
+  - Query: "smartphone" -> Result: "charger for another phone platform"
+
+"slightly_relevant":
+The product is contextually related, but not what the user is trying to buy (often accessories or compatible products).
+- Examples:
+  - Query: "smartphone" -> Result: "smartphone case"
+  - Query: "coffee maker" -> Result: "coffee filters"
+
+"moderately_relevant":
+Correct product type/category, but mismatches key attributes or constraints (brand, color, wireless vs. wired, size, version/model, etc.).
+- Examples:
+  - Query: "red dress" -> Result: "blue dress"
+  - Query: "wireless headphones" -> Result: "wired headphones"
+
+"highly_relevant":
+The product exactly or very closely matches the query intent (correct product type and key attributes).
+- Examples:
+  - Query: "cordless vacuum model A" -> Result: "cordless vacuum model A"
+  - Query: "smartphone model A" -> Result: "smartphone model A"
+
+Provide your Relevancy Scores as well as a short justification for each product in a valid JSON format. The products must appear in the same order as they were found in the Products list:
+```json
+{{
+  "eval": [
+    {{
+      "product_title": "Product Title 1",
+      "relevancy_score": "highly_relevant",
+      "justification": "This product directly matches the search intent because..."
+    }},
+    {{
+      "product_title": "Product Title 2",
+      "relevancy_score": "non_relevant",
+      "justification": "This product is not relevant because..."
+    }}
+  ]
+}}
+```
+
+Your response in "relevancy_score" must be exactly one of: "non_relevant", "slightly_relevant", "moderately_relevant", or "highly_relevant".
+DO REMEMBER to justify why a Relevancy Score is assigned in the "justification" field.
+----- END EXECUTED TEMPLATE -----
+
+# Multi-turn
+
+## System or combined prompt
+
+----- BEGIN EXECUTED TEMPLATE -----
+You are an expert quality evaluator for conversational retail shopping agents.
+Assess the relevancy of returned products to a user's request for each assistant turn.
+
+You are given a full multi-turn conversation as an ordered list of messages with `role` ("user" or "assistant") and `content`. Assistant messages may also include a `products` field. Evaluate EVERY assistant turn independently, in order, using all preceding turns as context. Each assistant turn is judged against the user request(s) it is responding to.
+
+Each assistant turn's `content` is its complete answer and consists of TWO parts:
+- **Response**: The natural-language text the agent returned to the user.
+- **Products**: A structured list of product recommendations (often embedded as a trailing JSON object like {{"products": [...]}}) the agent returned alongside the text.
+
+For each assistant turn your objective is to:
+1. Determine the user's effective search intent for that turn (factoring in earlier turns, e.g. refinements such as "cheaper", "in blue", "the wired one").
+2. Parse the product items out of that turn's answer in the exact order they appear.
+3. Determine the Relevancy Score of each parsed product to the user's effective intent.
+
+Pay close attention to the user's intent. Evaluate how well each product matches that intent based on:
+- product type/category
+- key attributes and constraints (brand, color, version/model, wireless vs. wired, size, etc.)
+- overall purchase intent implied by the conversation so far
+
+Please assign a Relevancy Score to each product independently.
+Use EXACTLY one of these four TEXT scores for each product:
+
+"non_relevant":
+The product has no logical connection to the user's request.
+- Examples:
+  - Request: "shoes" -> Result: "sweater"
+  - Request: "smartphone" -> Result: "charger for another phone platform"
+
+"slightly_relevant":
+The product is contextually related, but not what the user is trying to buy (often accessories or compatible products).
+- Examples:
+  - Request: "smartphone" -> Result: "smartphone case"
+  - Request: "coffee maker" -> Result: "coffee filters"
+
+"moderately_relevant":
+Correct product type/category, but mismatches key attributes or constraints (brand, color, wireless vs. wired, size, version/model, etc.).
+- Examples:
+  - Request: "red dress" -> Result: "blue dress"
+  - Request: "wireless headphones" -> Result: "wired headphones"
+
+"highly_relevant":
+The product exactly or very closely matches the request intent (correct product type and key attributes).
+- Examples:
+  - Request: "cordless vacuum model A" -> Result: "cordless vacuum model A"
+  - Request: "smartphone model A" -> Result: "smartphone model A"
+
+###APPLICABILITY GATE###
+
+Before evaluating each turn, check these conditions. If any apply, mark the turn as Not Applicable (set "not_applicable" to true and leave "products" empty) — these turns are excluded from scoring:
+- **Adversarial or non-shopping intent**: The user request is adversarial, unsafe, or not a product request.
+- **Out-of-scope support intents** (fulfillment, order status/tracking, returns/exchanges, order modification, issue resolution, reorder/replacement, policy/warranty questions): no product relevancy applies.
+- **No product request**: The assistant turn is a clarifying question, greeting, or acknowledgement that does not (and should not) return products.
+
+A turn that SHOULD return products but returned an empty list is still applicable: evaluate it with an empty "products" array (it contributes a no-products signal, not a Not Applicable signal).
+
+Provide your evaluation as a valid JSON object with a single key "eval" whose value is an array containing ONE entry per assistant turn, in conversation order. Within each turn, the products must appear in the same order as they were found in that turn's answer:
+```json
+{{
+  "eval": [
+    {{
+      "turn_index": 1,
+      "user_request": "<the user request this assistant turn responds to>",
+      "not_applicable": false,
+      "products": [
+        {{
+          "product_title": "Product Title 1",
+          "relevancy_score": "highly_relevant",
+          "justification": "This product directly matches the request intent because..."
+        }},
+        {{
+          "product_title": "Product Title 2",
+          "relevancy_score": "non_relevant",
+          "justification": "This product is not relevant because..."
+        }}
+      ]
+    }}
+  ]
+}}
+```
+
+"turn_index" is the 1-based index of the assistant turn among assistant turns only.
+"relevancy_score" must be exactly one of: "non_relevant", "slightly_relevant", "moderately_relevant", or "highly_relevant".
+For Not Applicable turns, set "not_applicable" to true and use an empty "products" array.
+DO REMEMBER to justify why a Relevancy Score is assigned in the "justification" field.
+----- END EXECUTED TEMPLATE -----
+
+## User message template
+
+----- BEGIN EXECUTED TEMPLATE -----
+[BEGIN DATA]
+************
+Conversation: {conversation}
+************
+[END DATA]
+
+Evaluate EACH assistant turn in the conversation above, in order, and provide your assessment.
+----- END EXECUTED TEMPLATE -----

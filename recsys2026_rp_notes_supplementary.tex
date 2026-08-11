@@ -1,0 +1,87 @@
+%%
+%% SERA — Supplementary Material (Anonymous)
+%% RecSys 2026 Research & Practice Notes
+%%
+\documentclass[sigconf,anonymous]{acmart}
+
+\makeatletter
+\def\input@path{{acmart-primary/}}
+\makeatother
+
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{microtype}
+
+\acmConference[RecSys '26]{20th ACM Conference on Recommender Systems}
+              {September--October 2026}{Minneapolis, Minnesota, USA}
+\acmYear{2026}
+\acmISBN{}
+\acmDOI{}
+\setcopyright{none}
+
+\begin{document}
+
+\title{SERA Supplementary Material: LLM-as-Judge Evaluation Prompts\\
+for Retail Agentic Shopping Assistants}
+
+\maketitle
+
+\appendix
+
+\section{Evaluation Prompt Templates}
+\label{app:prompts}
+
+The complete LLM-as-judge prompt templates for all 21 metrics in the
+SERA taxonomy (Table~1 of the main paper) are provided as individual
+text files in the accompanying \texttt{metric\_prompts/} folder.
+Each file contains the full rubric prompt provided to a GPT-4o judge
+alongside the conversation context.  Seed-query datasets
+(JSONL format) are included under
+\texttt{seed\_datasets/}.
+
+Table~\ref{tab:prompt-index} lists every metric with its scoring type
+and corresponding prompt file.
+
+\begin{table}[t]
+\caption{Supplementary prompt file index.  Each file contains the
+complete LLM-as-judge rubric for the named metric.}
+\Description{Index mapping each of the 21 SERA metrics to its prompt file,
+scoring type, and taxonomy dimension.}
+\label{tab:prompt-index}
+\setlength{\tabcolsep}{3pt}
+\footnotesize
+\begin{tabular}{p{0.06\columnwidth}p{0.38\columnwidth}p{0.22\columnwidth}p{0.22\columnwidth}}
+\toprule
+\textbf{\#} & \textbf{Metric} & \textbf{Scoring} & \textbf{File} \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Safety}}} \\[1pt]
+A.1 & Malicious Attack Refusal & Binary & \texttt{A01\_*.txt} \\
+A.2 & PII Refusal & Binary & \texttt{A02\_*.txt} \\
+A.3 & PII Echo & Binary & \texttt{A03\_*.txt} \\
+A.4 & Sensitive Content Refusal & Binary & \texttt{A04\_*.txt} \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Compliance}}} \\[1pt]
+A.5 & Refusal Appropriateness & 4-tier & \texttt{A05\_*.txt} \\
+A.6 & Constraint Adherence & 4-tier & \texttt{A06\_*.txt} \\
+A.7 & Category Compliance & 4-tier & \texttt{A07\_*.txt} \\
+A.8 & Reframe Quality & 4-tier & \texttt{A08\_*.txt} \\
+A.9 & Uncertainty Disclosure & 4-tier & \texttt{A09\_*.txt} \\
+A.10 & Disclosure Statement Presence & 4-tier & \texttt{A10\_*.txt} \\
+A.11 & Brand Voice \& Tone Compliance & 4-tier & \texttt{A11\_*.txt} \\
+A.12 & Conversation Structure Compliance & 4-tier & \texttt{A12\_*.txt} \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Agent Quality}}} \\[1pt]
+A.13 & Context Grounding & 4-tier & \texttt{A13\_*.txt} \\
+A.14 & Answer Relevance & 4-tier & \texttt{A14\_*.txt} \\
+A.15 & Answer Product Relevancy & 4-level + IR & \texttt{A15\_*.txt} \\
+A.16 & Recommendation Decisiveness & 4-tier & \texttt{A16\_*.txt} \\
+A.17 & Tool Selection & Deterministic & \texttt{A17\_*.txt} \\
+A.18 & Tool Arguments Quality & Continuous & \texttt{A18\_*.txt} \\
+A.19 & Session Completeness & Continuous & \texttt{A19\_*.txt} \\
+A.20 & Correction Recovery & 4-tier & \texttt{A20\_*.txt} \\
+A.21 & User Frustration & Continuous & \texttt{A21\_*.txt} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
