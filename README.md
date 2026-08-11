@@ -145,7 +145,9 @@ inherit those organization-wide policies.
 
 ## Citation
 
-Citation details will be added after publication.
+This work has been accepted to the **ACM RecSys 2026 Research & Practice Notes track**.
+
+Citation details will be added upon publication.
 
 ## License
 
