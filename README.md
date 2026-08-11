@@ -1,7 +1,10 @@
 # SERA Supplementary Materials
 
-This repository contains supplementary materials for the paper "SERA:
-LLM-as-Judge Evaluation Prompts for Retail Agentic Shopping Assistants."
+This repository contains the supplementary materials for the paper **"SERA:
+LLM-as-Judge Evaluation Prompts for Retail Agentic Shopping Assistants"**,
+accepted to the **ACM RecSys 2026 Research & Practice Notes track**.
+
+Citation details will be added upon publication.
 
 The materials include:
 
@@ -29,53 +32,53 @@ The materials include:
 
 ### Safety
 
-| ID | File | Metric | Scoring |
-| --- | --- | --- | --- |
-| A.1 | `metric_prompts/A01_malicious_attack_refusal.txt` | Jailbreak and adversarial resistance | Binary |
-| A.2 | `metric_prompts/A02_pii_refusal.txt` | Refusal of PII-extraction requests | Binary |
-| A.3 | `metric_prompts/A03_pii_echo.txt` | Inadvertent PII repetition | Binary |
-| A.4 | `metric_prompts/A04_sensitive_content_refusal.txt` | Harmful-topic avoidance | Binary |
+| ID  | File                                                 | Metric                               | Scoring |
+| --- | ---------------------------------------------------- | ------------------------------------ | ------- |
+| A.1 | `metric_prompts/A01_malicious_attack_refusal.txt`  | Jailbreak and adversarial resistance | Binary  |
+| A.2 | `metric_prompts/A02_pii_refusal.txt`               | Refusal of PII-extraction requests   | Binary  |
+| A.3 | `metric_prompts/A03_pii_echo.txt`                  | Inadvertent PII repetition           | Binary  |
+| A.4 | `metric_prompts/A04_sensitive_content_refusal.txt` | Harmful-topic avoidance              | Binary  |
 
 ### Compliance
 
-| ID | File | Metric | Scoring |
-| --- | --- | --- | --- |
-| A.5 | `metric_prompts/A05_refusal_appropriateness.txt` | In-scope vs. out-of-scope decisions | Four-tier compliant scale |
-| A.6 | `metric_prompts/A06_constraint_adherence.txt` | Hard constraint enforcement | Four-tier compliant scale |
-| A.7 | `metric_prompts/A07_category_compliance.txt` | Restricted-category handling | Four-tier compliant scale |
-| A.8 | `metric_prompts/A08_reframe_quality.txt` | Non-prescriptive language compliance | Four-tier compliant scale |
-| A.9 | `metric_prompts/A09_uncertainty_disclosure.txt` | Uncertainty communication | Four-tier compliant scale |
-| A.10 | `metric_prompts/A10_disclosure_statement.txt` | Mandatory disclosure compliance | Four-tier compliant scale |
-| A.11 | `metric_prompts/A11_voice_tone_compliance.txt` | Editorial voice and inclusive language | Four-tier compliant scale |
-| A.12 | `metric_prompts/A12_structure_compliance.txt` | Conversational flow adherence | Four-tier compliant scale |
+| ID   | File                                               | Metric                                 | Scoring                   |
+| ---- | -------------------------------------------------- | -------------------------------------- | ------------------------- |
+| A.5  | `metric_prompts/A05_refusal_appropriateness.txt` | In-scope vs. out-of-scope decisions    | Four-tier compliant scale |
+| A.6  | `metric_prompts/A06_constraint_adherence.txt`    | Hard constraint enforcement            | Four-tier compliant scale |
+| A.7  | `metric_prompts/A07_category_compliance.txt`     | Restricted-category handling           | Four-tier compliant scale |
+| A.8  | `metric_prompts/A08_reframe_quality.txt`         | Non-prescriptive language compliance   | Four-tier compliant scale |
+| A.9  | `metric_prompts/A09_uncertainty_disclosure.txt`  | Uncertainty communication              | Four-tier compliant scale |
+| A.10 | `metric_prompts/A10_disclosure_statement.txt`    | Mandatory disclosure compliance        | Four-tier compliant scale |
+| A.11 | `metric_prompts/A11_voice_tone_compliance.txt`   | Editorial voice and inclusive language | Four-tier compliant scale |
+| A.12 | `metric_prompts/A12_structure_compliance.txt`    | Conversational flow adherence          | Four-tier compliant scale |
 
 ### Agent Quality
 
-| ID | File | Metric | Scoring |
-| --- | --- | --- | --- |
-| A.13 | `metric_prompts/A13_context_grounding.txt` | Hallucination detection | Four-tier scale |
-| A.14 | `metric_prompts/A14_answer_relevance.txt` | Response relevance to user intent | Four-tier scale |
-| A.15 | `metric_prompts/A15_answer_product_relevancy.txt` | Product-query alignment | Four-level relevancy |
-| A.16 | `metric_prompts/A16_recommendation_decisiveness.txt` | Clear, committed recommendations | Four-tier scale |
-| A.17 | `metric_prompts/A17_tool_selection.txt` | Correct tool invocation | Deterministic |
-| A.18 | `metric_prompts/A18_tool_arguments_quality.txt` | Tool parameter correctness | Continuous 0-1 |
-| A.19 | `metric_prompts/A19_session_completeness.txt` | End-to-end task resolution | Continuous 0-1 |
-| A.20 | `metric_prompts/A20_correction_recovery.txt` | Preference-correction tracking | Four-tier scale |
-| A.21 | `metric_prompts/A21_user_frustration.txt` | UX failure detection | Continuous 0-1 |
+| ID   | File                                                   | Metric                            | Scoring              |
+| ---- | ------------------------------------------------------ | --------------------------------- | -------------------- |
+| A.13 | `metric_prompts/A13_context_grounding.txt`           | Hallucination detection           | Four-tier scale      |
+| A.14 | `metric_prompts/A14_answer_relevance.txt`            | Response relevance to user intent | Four-tier scale      |
+| A.15 | `metric_prompts/A15_answer_product_relevancy.txt`    | Product-query alignment           | Four-level relevancy |
+| A.16 | `metric_prompts/A16_recommendation_decisiveness.txt` | Clear, committed recommendations  | Four-tier scale      |
+| A.17 | `metric_prompts/A17_tool_selection.txt`              | Correct tool invocation           | Deterministic        |
+| A.18 | `metric_prompts/A18_tool_arguments_quality.txt`      | Tool parameter correctness        | Continuous 0-1       |
+| A.19 | `metric_prompts/A19_session_completeness.txt`        | End-to-end task resolution        | Continuous 0-1       |
+| A.20 | `metric_prompts/A20_correction_recovery.txt`         | Preference-correction tracking    | Four-tier scale      |
+| A.21 | `metric_prompts/A21_user_frustration.txt`            | UX failure detection              | Continuous 0-1       |
 
 ## Seed Datasets
 
 Each seed dataset is JSON Lines format. Records contain a user-message
 field and may include scenario metadata used by the evaluation pipeline.
 
-| File | Scenario | Rows | Covered metrics |
-| --- | --- | ---: | --- |
-| `seed_datasets/malicious_attack.jsonl` | Adversarial and jailbreak queries | 70 | A.1 |
-| `seed_datasets/pii_refusal.jsonl` | Queries containing PII | 100 | A.2 |
-| `seed_datasets/pii_echo.jsonl` | PII echo elicitation | 100 | A.3 |
-| `seed_datasets/sensitive_content.jsonl` | Sensitive topics with category labels | 177 | A.4 |
-| `seed_datasets/rai_compliance.jsonl` | Constraint and compliance queries | 100 | A.5-A.12 |
-| `seed_datasets/product_query.jsonl` | Standard product discovery | 100 | A.13-A.21 |
+| File                                      | Scenario                              | Rows | Covered metrics |
+| ----------------------------------------- | ------------------------------------- | ---: | --------------- |
+| `seed_datasets/malicious_attack.jsonl`  | Adversarial and jailbreak queries     |   70 | A.1             |
+| `seed_datasets/pii_refusal.jsonl`       | Queries containing PII                |  100 | A.2             |
+| `seed_datasets/pii_echo.jsonl`          | PII echo elicitation                  |  100 | A.3             |
+| `seed_datasets/sensitive_content.jsonl` | Sensitive topics with category labels |  177 | A.4             |
+| `seed_datasets/rai_compliance.jsonl`    | Constraint and compliance queries     |  100 | A.5-A.12        |
+| `seed_datasets/product_query.jsonl`     | Standard product discovery            |  100 | A.13-A.21       |
 
 ## Usage
 
@@ -142,12 +145,6 @@ PY
 This repository intentionally does not contain `SECURITY.md` or
 `CODE_OF_CONDUCT.md`; repositories hosted by the publishing organization
 inherit those organization-wide policies.
-
-## Citation
-
-This work has been accepted to the **ACM RecSys 2026 Research & Practice Notes track**.
-
-Citation details will be added upon publication.
 
 ## License
 
