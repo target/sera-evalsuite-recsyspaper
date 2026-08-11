@@ -68,8 +68,9 @@ The materials include:
 
 ## Seed Datasets
 
-Each seed dataset is JSON Lines format. Records contain a user-message
-field and may include scenario metadata used by the evaluation pipeline.
+Each seed dataset is JSON Lines format. Records contain a `user_message`
+field and a `conversation_id` used to reference rows in research and issue
+reports.
 
 | File                                      | Scenario                              | Rows | Covered metrics |
 | ----------------------------------------- | ------------------------------------- | ---: | --------------- |
@@ -80,23 +81,41 @@ field and may include scenario metadata used by the evaluation pipeline.
 | `seed_datasets/rai_compliance.jsonl`    | Constraint and compliance queries     |  100 | A.5-A.12        |
 | `seed_datasets/product_query.jsonl`     | Standard product discovery            |  100 | A.13-A.21       |
 
+These are **seed inputs**, not benchmark scores. They do not include model
+outputs. Their intended use is described in the Usage section below.
+
 ## Usage
 
-Prompt templates are plain text files. To evaluate a model response,
+### Generating multi-turn evaluation conversations
+
+As described in the paper (Section 3.2), seed queries are used to generate
+multi-turn conversations through a **persona-driven conversation simulator**:
+
+1. A seed query is sent to the **agent endpoint** under evaluation.
+2. An **LLM-based synthetic-user persona** receives the agent's response
+   and decides whether the user is satisfied or should send a follow-up.
+3. Steps 1–2 repeat until the persona signals satisfaction or a turn
+   limit is reached (five turns in the paper).
+4. The completed conversation is passed to the **21 LLM-as-judge metrics**
+   for scoring.
+
+Three persona archetypes are described in the paper: *Shopper* (generic
+browsing), *BargainHunter* (price-sensitive), and *ImpatientShopper*
+(brevity-seeking). Only the user side of the conversation is simulated;
+the agent produces real responses from the system under test.
+
+### Applying the metric prompts
+
+Prompt templates are plain text files. To evaluate a completed conversation,
 combine the relevant prompt template with the conversation context and
 candidate assistant response, then send that completed prompt to an
 LLM-as-judge model.
 
-Each metric file reproduces the complete prompt structure used by the code.
-Where the implementation sends separate system and user messages, both are
-included. Section headings and `BEGIN/END EXECUTED TEMPLATE` markers are
-publication metadata and are not part of the runtime prompt. A.17 is a
-deterministic metric and therefore correctly documents that no LLM prompt is
-executed.
-
-The files in `seed_datasets/` are intended as seed inputs for generating
-or simulating evaluation conversations. They are not benchmark scores and
-do not include model outputs.
+Each metric file reproduces the complete prompt structure used by the
+implementation, including both single-turn and multi-turn variants. Section
+headings and `BEGIN/END EXECUTED TEMPLATE` markers are publication metadata
+and are not part of the runtime prompt. A.17 is a deterministic metric and
+therefore correctly documents that no LLM prompt is executed.
 
 ## Data Provenance and Privacy
 
