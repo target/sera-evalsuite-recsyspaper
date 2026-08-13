@@ -147,25 +147,10 @@ The A.19 and A.21 prompt stages come from the Apache-2.0-licensed Opik 1.9.47
 dependency used by the implementation. See `THIRD_PARTY_NOTICES.md` for the
 required attribution and modification notice.
 
-## Release Validation
-
-Before proposing a change, verify JSONL files are valid:
-
-```sh
-python3 - <<'PY'
-import json, pathlib
-for p in pathlib.Path("seed_datasets").glob("*.jsonl"):
-    for i, line in enumerate(p.open(), 1):
-        json.loads(line)
-    print(f"ok {p}")
-PY
-```
-
 This repository intentionally does not contain `SECURITY.md` or
 `CODE_OF_CONDUCT.md`; repositories hosted by the publishing organization
 inherit those organization-wide policies.
 
 ## License
 
-This project is licensed under the Apache License, Version 2.0. See
-`LICENSE` for details.
+See [LICENSE](LICENSE.md).

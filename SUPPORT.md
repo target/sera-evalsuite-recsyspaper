@@ -9,7 +9,7 @@ maintainers.
 
 | Version | Supported |
 | --- | --- |
-| Latest release | Yes |
+| Latest release | No |
 | Older releases | No |
 
 Corrections are applied to the latest release. Older versions may remain
