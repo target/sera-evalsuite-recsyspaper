@@ -153,4 +153,4 @@ inherit those organization-wide policies.
 
 ## License
 
-See [LICENSE](LICENSE.md).
+See [LICENSE](LICENSE).
